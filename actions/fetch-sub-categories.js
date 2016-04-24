@@ -1,6 +1,19 @@
+'use strict';
+
+const Promise = require('bluebird');
+
+function getSubCategories(category) {
+  const map = {
+    'shoes': 'heels, sneakers, sandals',
+    'jeans': 'slim, skinny, straight',
+  };
+  return Promise.resolve(map[category]);
+}
+
 module.exports = (sessionId, context, cb) => {
-  // Here should go the api call, e.g.:
-  context.subcategories = 'heels, sneakers, sandals';
-  console.log('fetch-sub-categories', context);
-  cb(context);
+  getSubCategories(context.category)
+  .then((subcategories) => {
+    context.subcategories = subcategories;
+    cb(context);
+  });
 };
