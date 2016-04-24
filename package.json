@@ -1,25 +1,15 @@
 {
-  "name": "node-wit",
-  "version": "3.2.2",
-  "description": "Wit.ai Node.js SDK",
-  "keywords": [
-    "wit",
-    "wit.ai",
-    "bot",
-    "botengine",
-    "bots",
-    "nlp",
-    "automation"
-  ],
+  "name": "Sample-bot-1",
+  "version": "0.0.1",
+  "description": "Macys shopping bot",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start:messenger": "WIT_TOKEN=POI5HQTKUKYLX47DBFL2LL6WQ4EV7YTE FB_PAGE_ID=1611807809138554 FB_PAGE_TOKEN=EAALgbUKJv58BAI36eZCr0OJmboZACTbZAE4L9V9UsbYrWyeeMXhaYNJG9RhnpJvTmXVB5JBsFq2JKYEfEwnGJ62q7m7oECWDA8vC5JtVs6y3uUZCV6p8CFylQzxmH6ywawbTGn7SZAq0ZAB7GYNxpZAZCshFl0N6oPV2PyZCelBWmfEw8jPZB3LZBSr FB_VERIFY_TOKEN=i_am_awesome node examples/messenger.js"
+    "start:messenger": "WIT_TOKEN=POI5HQTKUKYLX47DBFL2LL6WQ4EV7YTE FB_PAGE_ID=1611807809138554 FB_PAGE_TOKEN=EAALgbUKJv58BAI36eZCr0OJmboZACTbZAE4L9V9UsbYrWyeeMXhaYNJG9RhnpJvTmXVB5JBsFq2JKYEfEwnGJ62q7m7oECWDA8vC5JtVs6y3uUZCV6p8CFylQzxmH6ywawbTGn7SZAq0ZAB7GYNxpZAZCshFl0N6oPV2PyZCelBWmfEw8jPZB3LZBSr FB_VERIFY_TOKEN=i_am_awesome node messenger.js"
   },
-  "repository": "https://github.com/wit-ai/node-wit",
-  "author": "Julien Odent <julien@wit.ai>",
   "dependencies": {
-    "node-uuid": "^1.4.7",
-    "request": "^2.69.0"
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4",
+    "node-wit": "^3.2.2",
+    "request": "^2.72.0"
   }
 }
