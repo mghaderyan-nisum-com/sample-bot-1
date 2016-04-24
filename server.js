@@ -1,18 +1,5 @@
 'use strict';
 
-// Messenger API integration example
-// We assume you have:
-// * a Wit.ai bot setup (https://wit.ai/docs/quickstart)
-// * a Messenger Platform setup (https://developers.facebook.com/docs/messenger-platform/quickstart)
-// You need to `npm install` the following dependencies: body-parser, express, request.
-//
-// 1. npm install body-parser express request
-// 2. Download and install ngrok from https://ngrok.com/download
-// 3. ./ngrok http 8445
-// 4. WIT_TOKEN=your_access_token FB_PAGE_ID=your_page_id FB_PAGE_TOKEN=your_page_token FB_VERIFY_TOKEN=verify_token node examples/messenger.js
-// 5. Subscribe your page to the Webhooks using verify_token and `https://<your_ngrok_io>/fb` as callback URL.
-// 6. Talk to your bot on Messenger!
-
 const bodyParser = require('body-parser');
 const express = require('express');
 const request = require('request');
@@ -35,35 +22,7 @@ if (!FB_PAGE_TOKEN) {
 }
 const FB_VERIFY_TOKEN = process.env.FB_VERIFY_TOKEN;
 
-// Messenger API specific code
-
-// See the Send API reference
-// https://developers.facebook.com/docs/messenger-platform/send-api-reference
-const fbReq = request.defaults({
-  uri: 'https://graph.facebook.com/me/messages',
-  method: 'POST',
-  json: true,
-  qs: { access_token: FB_PAGE_TOKEN },
-  headers: {'Content-Type': 'application/json'},
-});
-
-const fbMessage = (recipientId, msg, cb) => {
-  const opts = {
-    form: {
-      recipient: {
-        id: recipientId,
-      },
-      message: {
-        text: msg,
-      },
-    },
-  };
-  fbReq(opts, (err, resp, data) => {
-    if (cb) {
-      cb(err || data.error && data.error.message, data);
-    }
-  });
-};
+const fbMessage = require('./fbMessage')(FB_PAGE_TOKEN);
 
 // See the Webhook reference
 // https://developers.facebook.com/docs/messenger-platform/webhook-reference
@@ -83,51 +42,7 @@ const getFirstMessagingEntry = (body) => {
 };
 
 // Wit.ai bot specific code
-
-
-// Our bot actions
-const actions = {
-  say(sessionId, context, message, cb) {
-    // Our bot has something to say!
-    // Let's retrieve the Facebook user whose session belongs to
-    const recipientId = sessionHandler.getSession(sessionId).fbid;
-    if (recipientId) {
-      // Yay, we found our recipient!
-      // Let's forward our bot response to her.
-      fbMessage(recipientId, message, (err, data) => {
-        if (err) {
-          console.log(
-            'Oops! An error occurred while forwarding the response to',
-            recipientId,
-            ':',
-            err
-          );
-        }
-
-        // Let's give the wheel back to our bot
-        cb();
-      });
-    } else {
-      console.log('Oops! Couldn\'t find user for session:', sessionId);
-      // Giving the wheel back to our bot
-      cb();
-    }
-  },
-  merge(sessionId, context, entities, message, cb) {
-    cb(context);
-  },
-  error(sessionId, context, error) {
-    console.log(error.message);
-  },
-  ['fetch-weather'](sessionId, context, cb) {
-    // Here should go the api call, e.g.:
-    // context.forecast = apiCall(context.loc)
-    context.forecast = 'sunny';
-    cb(context);
-  },
-  // You should implement your custom actions here
-  // See https://wit.ai/docs/quickstart
-};
+const actions = require('./actions')(fbMessage);
 
 // Setting up our bot
 const wit = new Wit(WIT_TOKEN, actions);
