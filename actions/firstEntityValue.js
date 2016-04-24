@@ -3,5 +3,9 @@
 const _ = require('lodash');
 
 module.exports = (entities) => {
-  return _.head(entities.intent).value;
+  const first = _.head(entities.intent);
+  if (first) {
+    return first.value;
+  }
+  return null;
 }

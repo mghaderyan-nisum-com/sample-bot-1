@@ -33,7 +33,10 @@ module.exports = (fbMessage) => {
     merge(sessionId, context, entities, message, cb) {
       console.log('**** entities', entities);
       console.log('**** context', context);
-      context.category = firstEntityValue(entities);
+      const category = firstEntityValue(entities);
+      if (category) {
+        context.category = category;
+      }
       cb(context);
     },
     error(sessionId, context, error) {
