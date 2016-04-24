@@ -29,15 +29,18 @@ module.exports = (fbMessage) => {
       }
     },
     merge(sessionId, context, entities, message, cb) {
+      console.log('**** entities', entities);
+      console.log('**** context', context);
+      context.category = entities.intent[0].value;
       cb(context);
     },
     error(sessionId, context, error) {
-      console.log(error.message);
+      console.log('####', error.message);
     },
-    ['fetch-weather'](sessionId, context, cb) {
+    'fetch-sub-categories'(sessionId, context, cb) {
       // Here should go the api call, e.g.:
-      // context.forecast = apiCall(context.loc)
-      context.forecast = 'sunny';
+      context.subcategories = 'heels, sneakers, sandals';
+      console.log('fetch-sub-categories', context);
       cb(context);
     },
     // You should implement your custom actions here
