@@ -1,6 +1,7 @@
 'use strict';
 
 const request = require('request');
+const _ = require('lodash');
 
 module.exports = (FB_PAGE_TOKEN) => {
   // See the Send API reference
@@ -14,14 +15,22 @@ module.exports = (FB_PAGE_TOKEN) => {
   });
 
   const fbMessage = (recipientId, msg, cb) => {
+    var message = '';
+    console.log(msg);
+    if (_.isString(msg)) {
+      message = {
+        text: msg,
+      }
+    } else if (_.isObject(msg)) {
+      message = msg;
+    };
+
     const opts = {
       form: {
         recipient: {
           id: recipientId,
         },
-        message: {
-          text: msg,
-        },
+        message: message,
       },
     };
     fbReq(opts, (err, resp, data) => {

@@ -1,11 +1,13 @@
 'use strict';
 
-const _ = require('lodash');
-
-module.exports = (entities) => {
-  const first = _.head(entities.intent);
-  if (first) {
-    return first.value;
+module.exports = (entities, entity) => {
+  const val = entities && entities[entity] &&
+    Array.isArray(entities[entity]) &&
+    entities[entity].length > 0 &&
+    entities[entity][0].value
+  ;
+  if (!val) {
+    return null;
   }
-  return null;
-}
+  return typeof val === 'object' ? val.value : val;
+};
