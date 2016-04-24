@@ -16,12 +16,9 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const request = require('request');
-
-// When not cloning the `node-wit` repo, replace the `require` like so:
-// const Wit = require('node-wit').Wit;
 const Wit = require('node-wit').Wit;
+const sessionHandler = require('./sessionHandler');
 
-// Webserver parameter
 const PORT = process.env.PORT || 8445;
 
 // Wit.ai parameters
@@ -87,34 +84,13 @@ const getFirstMessagingEntry = (body) => {
 
 // Wit.ai bot specific code
 
-// This will contain all user sessions.
-// Each session has an entry:
-// sessionId -> {fbid: facebookUserId, context: sessionState}
-const sessions = {};
-
-const findOrCreateSession = (fbid) => {
-  let sessionId;
-  // Let's see if we already have a session for the user fbid
-  Object.keys(sessions).forEach(k => {
-    if (sessions[k].fbid === fbid) {
-      // Yep, got it!
-      sessionId = k;
-    }
-  });
-  if (!sessionId) {
-    // No session found for user fbid, let's create a new one
-    sessionId = new Date().toISOString();
-    sessions[sessionId] = {fbid: fbid, context: {}};
-  }
-  return sessionId;
-};
 
 // Our bot actions
 const actions = {
   say(sessionId, context, message, cb) {
     // Our bot has something to say!
     // Let's retrieve the Facebook user whose session belongs to
-    const recipientId = sessions[sessionId].fbid;
+    const recipientId = sessionHandler.getSession(sessionId).fbid;
     if (recipientId) {
       // Yay, we found our recipient!
       // Let's forward our bot response to her.
@@ -187,7 +163,7 @@ app.post('/fb', (req, res) => {
 
     // We retrieve the user's current session, or create one if it doesn't exist
     // This is needed for our bot to figure out the conversation history
-    const sessionId = findOrCreateSession(sender);
+    const sessionId = sessionHandler.findOrCreateSession(sender);
 
     // We retrieve the message content
     const msg = messaging.message.text;
@@ -209,7 +185,7 @@ app.post('/fb', (req, res) => {
       wit.runActions(
         sessionId, // the user's current session
         msg, // the user's message
-        sessions[sessionId].context, // the user's current session state
+        sessionHandler.getSession(sessionId).context, // the user's current session state
         (error, context) => {
           if (error) {
             console.log('Oops! Got an error from Wit:', error);
@@ -226,7 +202,7 @@ app.post('/fb', (req, res) => {
             // }
 
             // Updating the user's current session state
-            sessions[sessionId].context = context;
+            sessionHandler.updateContextForSession(sessionId, context);
           }
         }
       );
