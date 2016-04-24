@@ -1,4 +1,6 @@
-const sessionHandler = require('./sessionHandler');
+const sessionHandler = require('../sessionHandler');
+const firstEntityValue = require('./firstEntityValue');
+const fetchSubCategories = require('./fetch-sub-categories');
 
 module.exports = (fbMessage) => {
   const actions = {
@@ -31,18 +33,13 @@ module.exports = (fbMessage) => {
     merge(sessionId, context, entities, message, cb) {
       console.log('**** entities', entities);
       console.log('**** context', context);
-      context.category = entities.intent[0].value;
+      context.category = firstEntityValue(entities);
       cb(context);
     },
     error(sessionId, context, error) {
       console.log('####', error.message);
     },
-    'fetch-sub-categories'(sessionId, context, cb) {
-      // Here should go the api call, e.g.:
-      context.subcategories = 'heels, sneakers, sandals';
-      console.log('fetch-sub-categories', context);
-      cb(context);
-    },
+    'fetch-sub-categories': fetchSubCategories,
     // You should implement your custom actions here
     // See https://wit.ai/docs/quickstart
   };
